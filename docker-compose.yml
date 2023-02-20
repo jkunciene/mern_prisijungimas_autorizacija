@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: mernproject
+    volumes:
+      - ./backend/mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+
+  frontend:
+    image: node:14
+    command: sh -c "npm install && npm start"
+    working_dir: /var/www/frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    volumes:
+      - "./:/var/www"
+
+  backend:
+    image: node:14
+    command: sh -c "npm install && npm start"
+    working_dir: /var/www/backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    volumes:
+      - "./:/var/www"
